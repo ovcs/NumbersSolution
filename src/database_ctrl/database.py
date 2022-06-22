@@ -49,5 +49,8 @@ class DataBase:
                 connection.close()
             return record
 
-    def is_connect(self):
+    def connect(self):
         return self.query(self.queries['connect'], type='send') is not None
+
+    def create_table_if_not_exist(self):
+        self.query(self.queries['create_new_table_if_not_exist'])
