@@ -79,3 +79,9 @@ class Project:
             gval.append((int(row[0]), row[1], price, price * self.currency.value, delivery_date))
         return gval
 
+    def run(self):
+        self.check_connect()
+        self.start()
+        while True:
+            self.main()
+            time.sleep(self.time_update_sec)
