@@ -21,7 +21,7 @@ class Project:
         self.db = DataBase(cfg.DataBase)
         # self.tb = TeleBot(cfg.TeleBot)
 
-        self.logger = logging.getLogger()
+        self.logger = logging.getLogger(__name__)
         self.logger.setLevel(logging.INFO)
         formatter = logging.Formatter('%(asctime)s | %(levelname)s | %(message)s')
 
