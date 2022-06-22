@@ -12,9 +12,9 @@ from decimal import Decimal
 
 class Project:
     def __init__(self, cfg):
-        self.time_update_sec = cfg.Main.TIME_UPDATE_SEC
-        self.curr_datetime = cfg.Main.CURRENT_DATETIME
-        self.document_id = cfg.Google.DOCUMENT_ID
+        self.time_update_sec: int = cfg.Main.TIME_UPDATE_SEC
+        self.curr_datetime: datetime = cfg.Main.CURRENT_DATETIME
+        self.document_id: str = cfg.Google.DOCUMENT_ID
 
         self.gAPI = GoogleAPI(cfg.Google)
         self.currency = CurrencyExchange(cfg.CurrExc)
@@ -50,4 +50,32 @@ class Project:
             self.db.keys = (2,)
         else:
             self.db.update_column_currency(self.currency.value)
-        gsheet = GSheets(self.gAPI.service, spreadsheet_id=self.document_id)
+        self.gsheet = GSheets(self.gAPI.service, spreadsheet_id=self.document_id)
+
+    def main(self):
+        if self.curr_datetime.date() != datetime.now().date():
+            self.curr_datetime = datetime.now()
+            if self.currency.have_update(self.curr_datetime):
+                self.db.update_column_currency(self.currency.value)
+            # проверяем контрагентов на просрочку
+            ## загружаем с бд данные с датами
+            ## if delivery_date > now: # отправляем запрос телеграм боту
+        gkeys = tuple(int(i) for i in self.gsheet.load_values(range='A:A',
+                                                              major_dimension='COLUMNS',
+                                                              start_with=1))
+        if self.db.keys != gkeys:
+            deleted_rows = self.db.check_update(gkeys)
+            g_table = self.__create_gvalue_list(self.db.keys)
+            self.db.add(g_table)
+            self.db.delete(deleted_rows)
+            self.db.keys = gkeys
+
+    def __create_gvalue_list(self, last_row):
+        gval = []
+        gs_rows = self.gsheet.load_values(range=f'A{last_row[0][-1]}:D')
+        for row in gs_rows:
+            price = Decimal(row[2])
+            delivery_date = datetime.strptime(row[3], "%d.%m.%Y").date()
+            gval.append((int(row[0]), row[1], price, price * self.currency.value, delivery_date))
+        return gval
+
