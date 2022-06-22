@@ -14,6 +14,7 @@ class Project:
     def __init__(self, cfg):
         self.time_update_sec = cfg.Main.TIME_UPDATE_SEC
         self.curr_datetime = cfg.Main.CURRENT_DATETIME
+        self.document_id = cfg.Google.DOCUMENT_ID
 
         self.gAPI = GoogleAPI(cfg.Google)
         self.currency = CurrencyExchange(cfg.CurrExc)
