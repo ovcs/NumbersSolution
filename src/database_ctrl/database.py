@@ -63,3 +63,6 @@ class DataBase:
 
     def update_column_currency(self, value):
         self.query(self.queries['update_currency'], type='send', value=(value,))
+
+    def select(self, value):
+        return tuple(self.query(self.queries['select'].format(value), type='select'))
