@@ -1,7 +1,7 @@
 import requests
 import bs4
 
-from datetime import date, time
+from datetime import date, time,  timedelta, datetime
 from decimal import Decimal
 
 
@@ -36,3 +36,8 @@ class CurrencyExchange:
                 .replace(',', '.')).quantize(Decimal("1.00"))
         if self.value != type(Decimal):
             raise Exception(f'Error currency update, error parce currency value)')
+
+    def have_update(self, now: datetime):
+        if datetime.combine((self.exchange_date + timedelta(days=1)), self.exchange_time) < now:
+            self.parse_value_from_xml()
+            self.exchange_date = now.date()
