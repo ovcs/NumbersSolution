@@ -60,23 +60,27 @@ class Project:
             # проверяем контрагентов на просрочку
             ## загружаем с бд данные с датами
             ## if delivery_date > now: # отправляем запрос телеграм боту
-        gkeys = tuple(int(i) for i in self.gsheet.load_values(range='A:A',
-                                                              major_dimension='COLUMNS',
-                                                              start_with=1))
+        gkeys = self.__get_google_keys()
         if self.db.keys != gkeys:
-            deleted_rows = self.db.check_update(gkeys)
-            g_table = self.__create_gvalue_list(self.db.keys)
+            changed_rows = self.db.check_update(gkeys)
+            g_table = self.__create_gvalue_list(changed_rows[0])
             self.db.add(g_table)
-            self.db.delete(deleted_rows)
+            self.db.delete(changed_rows[1])
             self.db.keys = gkeys
 
-    def __create_gvalue_list(self, last_row):
+    def __get_google_keys(self):
+        return tuple(int(i) for i in
+                     filter(lambda x: x != '',
+                            self.gsheet.load_values(range='A:A', major_dimension='COLUMNS', start_with=1)))
+
+    def __create_gvalue_list(self, rows):
         gval = []
-        gs_rows = self.gsheet.load_values(range=f'A{last_row[0][-1]}:D')
-        for row in gs_rows:
-            price = Decimal(row[2])
-            delivery_date = datetime.strptime(row[3], "%d.%m.%Y").date()
-            gval.append((int(row[0]), row[1], price, price * self.currency.value, delivery_date))
+        if rows != ():
+            gs_rows = self.gsheet.load_values(range=f'A{rows[0]+1}:D')
+            for row in gs_rows:
+                price = Decimal(row[2])
+                delivery_date = datetime.strptime(row[3], "%d.%m.%Y").date()
+                gval.append((int(row[0]), row[1], price, price * self.currency.value, delivery_date))
         return gval
 
     def run(self):
