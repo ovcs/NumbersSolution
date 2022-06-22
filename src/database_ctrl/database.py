@@ -1,6 +1,6 @@
 import psycopg2
 
-from project import logger
+from src.project import logger
 from psycopg2 import Error
 from psycopg2.extras import execute_values
 
