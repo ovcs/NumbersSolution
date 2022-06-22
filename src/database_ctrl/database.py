@@ -13,7 +13,6 @@ class DataBase:
     def __init__(self, cfg):
         self.host = cfg.queries
         self.queries = cfg.queries
-        self.keys = cfg.keys
         self.logger = logging.getLogger(__name__)
 
     def query(self, sql, type=None, value=None):
