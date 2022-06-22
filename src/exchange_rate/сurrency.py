@@ -1,4 +1,5 @@
 import requests
+import bs4
 
 from datetime import date, time
 from decimal import Decimal
@@ -24,3 +25,14 @@ class CurrencyExchange:
             return response
         else:
             raise Exception(f'Error currency update, http status code {response.status_code}')
+
+    def parse_value_from_xml(self):
+        resp = self.send_request()
+        soup = bs4.BeautifulSoup(resp.text, 'xml')
+        self.value = Decimal(
+            soup.find(ID=self.currency_id)
+                .find('Value')
+                .get_text()
+                .replace(',', '.')).quantize(Decimal("1.00"))
+        if self.value != type(Decimal):
+            raise Exception(f'Error currency update, error parce currency value)')
