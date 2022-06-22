@@ -1,5 +1,6 @@
 import requests
 import bs4
+import logging
 
 from datetime import date, time,  timedelta, datetime
 from decimal import Decimal
@@ -18,6 +19,7 @@ class CurrencyExchange:
         self.exchange_date = cfg.exchange_date
         self.exchange_time = cfg.exchange_time
         self.value = Decimal('1')
+        self.logger = logging.getLogger(__name__)
 
     def send_request(self):
         response = requests.get(self.url, headers={'Connection': 'close'})
@@ -27,15 +29,16 @@ class CurrencyExchange:
             raise Exception(f'Error currency update, http status code {response.status_code}')
 
     def parse_value_from_xml(self):
-        resp = self.send_request()
-        soup = bs4.BeautifulSoup(resp.text, 'xml')
-        self.value = Decimal(
-            soup.find(ID=self.currency_id)
-                .find('Value')
-                .get_text()
-                .replace(',', '.')).quantize(Decimal("1.00"))
-        if self.value != type(Decimal):
-            raise Exception(f'Error currency update, error parce currency value)')
+        try:
+            resp = self.send_request()
+            soup = bs4.BeautifulSoup(resp.text, 'xml')
+            self.value = Decimal(
+                soup.find(ID=self.currency_id)
+                    .find('Value')
+                    .get_text()
+                    .replace(',', '.')).quantize(Decimal("1.00"))
+        except Exception:
+            self.logger.error(f'Error currency update, error parce currency value {Exception.args}')
 
     def have_update(self, now: datetime):
         if datetime.combine((self.exchange_date + timedelta(days=1)), self.exchange_time) < now:
