@@ -60,3 +60,6 @@ class DataBase:
 
     def delete_row(self, id_rows):
         self.query(self.queries['delete'], type='send', value=(id_rows,))
+
+    def update_column_currency(self, value):
+        self.query(self.queries['update_currency'], type='send', value=(value,))
