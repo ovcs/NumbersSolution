@@ -54,3 +54,6 @@ class DataBase:
 
     def create_table_if_not_exist(self):
         self.query(self.queries['create_new_table_if_not_exist'])
+
+    def insert(self, values):
+        self.query(self.queries['insert'], type='send', value=values)
