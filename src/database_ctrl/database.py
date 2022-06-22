@@ -69,3 +69,7 @@ class DataBase:
 
     def add(self, changed_rows):
         self.insert(changed_rows)
+
+    def delete(self, changes):
+        for i in changes:
+            self.delete_row(i)
