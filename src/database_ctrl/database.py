@@ -48,3 +48,6 @@ class DataBase:
                 cursor.close()
                 connection.close()
             return record
+
+    def is_connect(self):
+        return self.query(self.queries['connect'], type='send') is not None
