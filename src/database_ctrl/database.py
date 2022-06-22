@@ -66,3 +66,6 @@ class DataBase:
 
     def select(self, value):
         return tuple(self.query(self.queries['select'].format(value), type='select'))
+
+    def add(self, changed_rows):
+        self.insert(changed_rows)
