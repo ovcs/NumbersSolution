@@ -57,3 +57,6 @@ class DataBase:
 
     def insert(self, values):
         self.query(self.queries['insert'], type='send', value=values)
+
+    def delete_row(self, id_rows):
+        self.query(self.queries['delete'], type='send', value=(id_rows,))
