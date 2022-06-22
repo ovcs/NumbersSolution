@@ -76,3 +76,6 @@ class DataBase:
 
     def check_update(self, compare_keys):
         return tuple(set(self.keys) - set(compare_keys))
+
+    def load_current_keys(self):
+        self.keys = self.select(value="order_id")
