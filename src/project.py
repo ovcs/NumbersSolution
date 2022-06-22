@@ -41,3 +41,13 @@ class Project:
         except Exception:
             self.logger.info(f"Connection Fault. {Exception.args}")
             exit()
+
+    def start(self):
+        self.db.create_table_if_not_exist()
+        self.db.load_current_keys()
+        # If new table, take start index
+        if self.db.keys == ():
+            self.db.keys = (2,)
+        else:
+            self.db.update_column_currency(self.currency.value)
+        gsheet = GSheets(self.gAPI.service, spreadsheet_id=self.document_id)
