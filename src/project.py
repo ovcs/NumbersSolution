@@ -38,7 +38,7 @@ class Project:
             self.db.connect()
             # self.tb.connect()
             self.logger.info("Connection Success")
-        except Exception:
+        except Exception.args:
             self.logger.info(f"Connection Fault. {Exception.args}")
             exit()
 
