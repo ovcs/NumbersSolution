@@ -73,3 +73,6 @@ class DataBase:
     def delete(self, changes):
         for i in changes:
             self.delete_row(i)
+
+    def check_update(self, compare_keys):
+        return tuple(set(self.keys) - set(compare_keys))
