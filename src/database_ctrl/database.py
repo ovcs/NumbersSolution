@@ -11,7 +11,7 @@ class DataBase:
     keys: tuple
 
     def __init__(self, cfg):
-        self.host = cfg.queries
+        self.host = cfg.host
         self.queries = cfg.queries
         self.logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class DataBase:
             connection.commit()
 
         except (Exception, Error) as e:
-            self.logger.error(f"Error exception PostgreSQL: {e}")
+            self.logger.error(f"Error exception PostgreSQL: {e.args}")
         finally:
             if connection:
                 cursor.close()
