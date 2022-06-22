@@ -1,6 +1,6 @@
 import psycopg2
+import logging
 
-from src.project import logger
 from psycopg2 import Error
 from psycopg2.extras import execute_values
 
@@ -14,6 +14,7 @@ class DataBase:
         self.host = cfg.queries
         self.queries = cfg.queries
         self.keys = cfg.keys
+        self.logger = logging.getLogger(__name__)
 
     def query(self, sql, type=None, value=None):
         connection = None
@@ -42,7 +43,7 @@ class DataBase:
             connection.commit()
 
         except (Exception, Error) as e:
-            logger.error(f"Error exception PostgreSQL: {e}")
+            self.logger.error(f"Error exception PostgreSQL: {e}")
         finally:
             if connection:
                 cursor.close()
